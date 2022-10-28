@@ -1,51 +1,27 @@
 import { useState, useEffect } from "react";
-
+import axios from "axios"
 import Card from "../../components/Card";
 import AddPostModal from "./components/AddPostModal";
 import EditPostModal from "./components/EditPostModal";
 
 const Posts = () => {
+  const name = "";
   const [isAddPostModalVisible, setIsAddPostModalVisible] = useState();
   const [isEditPostModalVisible, setIsEditPostModalVisible] = useState();
+  const [isModalVisible, setIsModalVisible] = useState();
+  const [items, setItems] = useState(null);
   const [item, setItem] = useState(null);
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
-  const items = [
-    {
-      id: 1,
-      title: "title 1",
-      desc: "dskdnksadsa dsja hdjsa d dhasj ",
-      qty: 1,
-      price: "3450.00",
-    },
-    {
-      id: 2,
-      title: "title 2",
-      desc: "dskdnksadsa dshda dsd shdkjas dhsa dhjsa dahsd hsajd sahddsdsd m dsjd",
-      qty: 2,
-      price: "1000.00",
-    },
-    {
-      id: 3,
-      title: "title 3",
-      desc: "dskdnksadsa dshdk s s dakj dkadas",
-      qty: 1,
-      price: "1200.00",
-    },
-    {
-      id: 4,
-      title: "title 4",
-      desc: "dskdnksadsa",
-      qty: 1,
-      price: "23000.00",
-    },
-    {
-      id: 5,
-      title: "title 5  hdjhd sadkj sadhsaj djsa djsa djsa dhjsa dkjashd ",
-      desc: "dskdnksadsa dks d s dhsjd sjad sakd dkj sdk asdkj ad dsjahd a kj dahs d dshajd sahd sdhkja dj hak",
-      qty: 4,
-      price: "1030.00",
-    },
-  ];
+  const fetchItems = async () => {
+    const response = await axios.get(
+      `http://localhost:3333/api/seller/item/find-by-seller/Ws`
+    );
+    setItems(response.data);
+    console.log(items);
+  };
 
   const onAddPostModalClick = () => {
     setIsAddPostModalVisible(true);
@@ -54,15 +30,15 @@ const Posts = () => {
   const onEditPostModalClick = (item) => {
     setIsEditPostModalVisible(true);
     setItem(item);
-  }
+  };
 
   const onAddPostModalClose = () => {
     setIsAddPostModalVisible(false);
   };
   const onEditPostModalClose = () => {
     setIsEditPostModalVisible(false);
-  };
-
+  }; 
+  
   return (
     <div className="px-20 pt-10 relative">
       <button
@@ -72,10 +48,14 @@ const Posts = () => {
         Add Post +
       </button>
       <div className="grid grid-cols-4 gap-6">
-        {items.map((item) => (
+        {items && items.map((item) => (
           <Card item={item} onClick={() => onEditPostModalClick(item)} />
         ))}
-        <AddPostModal show={isAddPostModalVisible} onClose={onAddPostModalClose} item={item} />
+        <AddPostModal
+          show={isAddPostModalVisible}
+          onClose={onAddPostModalClose}
+
+        />
         <EditPostModal
           show={isEditPostModalVisible}
           onClose={onEditPostModalClose}

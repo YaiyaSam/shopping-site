@@ -1,71 +1,263 @@
+import axios from "axios";
+import { useState, useEffect } from "react";
 import CartItem from "./CartItem";
+import { useNavigate } from "react-router-dom";
 
 function Checkout() {
+  const [state, setState] = useState(0);
+  useEffect(() => {
+    fetchItems();
+  }, []);
+  const [isModalVisible, setIsModalVisible] = useState();
+  const [items, setItems] = useState(null);
+  const [item, setItem] = useState(null);
+  const [payment, setPayment] = useState(false);
+  const [delivery, setDelivery] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(true);
+  const [address, setAddress] = useState("");
+  const [cardNo, setCardNo] = useState("");
+  const [cvc, setCvc] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [mobile, setMobile] = useState("");
+
+  let navigate = useNavigate()
+  let products = [];
+  const fetchItems = () => {
+    if (localStorage.getItem("products")) {
+      products = JSON.parse(localStorage.getItem("products"));
+      setItems(products);
+    }
+  };
 
   const checkoutFunction = () => {
     //checkout
+    setPayment(true);
   };
 
-    const items = [
-      {
-        id: 1,
-        title: "title 1",
-        desc: "dskdnksadsa dsja hdjsa d dhasj ",
-        qty: 1,
-        price: "3450",
-      },
-      {
-        id: 2,
-        title: "title 2",
-        desc: "dskdnksadsa dshda dsd shdkjas dhsa dhjsa dahsd hsajd sahddsdsd m dsjd",
-        qty: 2,
-        price: "1000",
-      },
-      {
-        id: 3,
-        title: "title 3",
-        desc: "dskdnksadsa dshdk s s dakj dkadas",
-        qty: 1,
-        price: "1200",
-      }
-    ];
+  const handleDeliveryChange = (event) => {
+    if (event.target.checked) {
+      setDelivery(true);
+    } else setDelivery(false);
+  };
+  const handleCardMethod = (event) => {
+    if (event.target.checked) {
+      setPaymentMethod(true);
+    }
+  };
 
-    return (
-      <div class="container px-20 pt-10">
-        <div class="flex shadow-md my-10">
-          <div class="w-3/4 bg-white px-10 py-10">
-            <div class="flex justify-between border-b pb-8">
-              <h1 class="font-semibold text-xl">Shopping Cart</h1>
-            </div>
-            <div class="flex mt-10 mb-5">
-              <p className="text-gray-600 text-sm uppercase w-1/5">Product</p>
-              <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">Quantity</p>
-              <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">Price</p>
-              <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">Total</p>
-            </div>
-            {items.map((item) => (
-            <CartItem item={item} />
-            ))}
+  const handleMobileMethod = (event) => {
+    if (event.target.checked) {
+      setPaymentMethod(false);
+    }
+  };
+
+  const handleDeliveryAddress = (event) => {
+    setAddress(event.target.value);
+  };
+  const handleCardNameChange = (event) => {
+    setCardName(event.target.value);
+  };
+  const handleCardNoChange = (event) => {
+    setCardNo(event.target.value);
+  };
+  const handleCvcChange = (event) => {
+    setCvc(event.target.value);
+  };
+  const handlePayment = () => {
+    let amount;
+    if (items) {
+      amount = items.reduce((total, item) => {
+        return total + parseInt(item.price.slice(0, -1)) * item.qty;
+      }, 0);
+    }
+    if (address) {
+      axios
+        .post(`http://localhost:5555/api/delivery`, {
+          username: "Kalsha",
+          location: address,
+        })
+        .then((response) => console.log(response));
+    }
+
+    if (paymentMethod == 1) {
+      axios
+        .post(`http://localhost:4444/api/payment/card`, {
+          cardHolderName: cardName,
+          ccNo: cardNo,
+          amount: amount,
+          cvc: cvc,
+        })
+        .then((response) => console.log(response));
+    }
+    if (paymentMethod == 2) {
+      if ((mobile, amount)) {
+        axios
+          .post(`http://localhost:4444/api/payment/mobile`, {
+            mobileNo: mobile,
+            pinNo: 0,
+            amount: amount,
+          })
+          .then((response) => console.log(response));
+      }
+    }
+    localStorage.removeItem("products");
+    alert("Payment Succesful");
+    navigate("/home")
+  };
+  return (
+    <div class="container px-20 pt-10">
+      <div class="flex shadow-md my-10 justify-between">
+        <div class="w-3/5 bg-white px-10 py-10">
+          <div class="flex justify-between border-b pb-8">
+            <h1 class="font-semibold text-xl">Shopping Cart</h1>
           </div>
-          <div class="w-1/4 px-8 py-10 bg-slate-50">
+          <div class="flex mt-10 mb-5">
+            <p className="text-gray-600 text-sm uppercase w-1/5">Product</p>
+            <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">
+              Quantity
+            </p>
+            <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">
+              Price
+            </p>
+            <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">
+              Total
+            </p>
+          </div>
+          {items && items.map((item) => <CartItem item={item} />)}
+        </div>
+        {!payment && (
+          <div class="w-2/5 px-8 py-10 bg-slate-50">
             <h1 class="font-semibold text-xl border-b pb-8">Order Summary</h1>
             <div class="flex justify-between mt-10 mb-5">
               <p className="font-semibold text-sm uppercase"># Items</p>
-              <p className="font-semibold text-sm uppercase">3</p>
+              <p className="font-semibold text-sm uppercase">
+                {items && items.length}
+              </p>
             </div>
             <div class="flex justify-between py-6">
               <p className="font-semibold text-sm uppercase">Total cost</p>
-              <p className="font-semibold text-sm uppercase">600</p>
+              <p className="font-semibold text-sm uppercase">
+                {items &&
+                  items.reduce((total, item) => {
+                    return total + parseInt(item.price.slice(0, -1)) * item.qty;
+                  }, 0)}
+                $
+              </p>
             </div>
             <button
               className="bg-blue-600 rounded-lg text-white font-semibold py-3 text-sm uppercase w-full"
               onClick={checkoutFunction}
-              >
+            >
               Checkout
             </button>
           </div>
-        </div>
-      </div>  
+        )}
+
+        {payment && (
+          <div class="w-2/5 px-8 py-10 bg-slate-50">
+            <h1 class="font-semibold text-xl border-b pb-8">Payment</h1>
+            <div class="flex justify-between mt-10 mb-5">
+              <label htmlFor="Delivery">
+                <input type="checkbox" onChange={handleDeliveryChange} />
+                Delivery
+              </label>
+            </div>
+            {delivery && (
+              <div class="flex justify-between mb-5 w-full">
+                <label htmlFor="DeliveryAddress">
+                  <input
+                    type="text"
+                    placeholder="Enter address"
+                    className="p-1 outline outline-1"
+                    onChange={handleDeliveryAddress}
+                    value={address}
+                  />
+                </label>
+              </div>
+            )}
+
+            <div class="flex justify-between mt-10 mb-5">
+              <label htmlFor="Payment">
+                <input
+                  name="pay-method"
+                  type="radio"
+                  onChange={handleCardMethod}
+                />
+                Card payment
+              </label>
+              <label htmlFor="Payment">
+                <input
+                  name="pay-method"
+                  type="radio"
+                  onChange={handleMobileMethod}
+                />
+                Mobile payment
+              </label>
+            </div>
+
+            {paymentMethod ? (
+              <>
+                <div class="mb-5 w-full">
+                  <label htmlFor="DeliveryAddress">
+                    Name
+                    <input
+                      type="text"
+                      placeholder="Enter address"
+                      className="p-1 outline outline-1 ml-7"
+                      value={cardName}
+                      onChange={handleCardNameChange}
+                    />
+                  </label>
+                </div>
+                <div class="mb-5 w-full">
+                  <label htmlFor="DeliveryAddress" className="">
+                    Card No
+                    <input
+                      type="text"
+                      placeholder="Enter address"
+                      className="p-1 outline outline-1 ml-3"
+                      value={cardNo}
+                      onChange={handleCardNoChange}
+                    />
+                  </label>
+                </div>
+                <div class="mb-5 w-full">
+                  <label htmlFor="DeliveryAddress">
+                    CVC
+                    <input
+                      type="text"
+                      placeholder="Enter address"
+                      className="p-1 outline outline-1 ml-11"
+                      value={cvc}
+                      onChange={handleCvcChange}
+                    />
+                  </label>
+                </div>
+              </>
+            ) : (
+              <div class="flex justify-between mb-5 w-full">
+                <label htmlFor="DeliveryAddress">
+                  Mobile No:
+                  <input
+                    type="text"
+                    placeholder="Enter mobile no"
+                    className="p-1 outline outline-1 ml-8"
+                    value={mobile}
+                  />
+                </label>
+              </div>
+            )}
+
+            <button
+              className="bg-blue-600 rounded-lg text-white font-semibold py-3 text-sm uppercase w-full"
+              onClick={handlePayment}
+            >
+              Pay
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

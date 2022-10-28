@@ -1,8 +1,16 @@
-const Modal = ({ show, onClose, item }) => {
-  const addToCart = () => {
-    //post request to create a new post
-    onClose();
-  };
+const Modal = ({ show, onClose, item, addToCart }) => {
+  // const addToCart = () => {
+  //   //post request to create a new post
+
+  //   let products = [];
+  //   if (localStorage.getItem("products")) {
+  //     products = JSON.parse(localStorage.getItem("products"));
+  //   }
+  //   products.push({ productId: item.id, name: item.name, price: item.price, qty:item.qty});
+  //   localStorage.setItem("products", JSON.stringify(products));
+
+  //   onClose();
+  // };
 
   if (show) {
     return (
@@ -13,13 +21,11 @@ const Modal = ({ show, onClose, item }) => {
         >
           x
         </div>
-        <div className="text-xl font-semibold w-full ">
-          {item.title}
-        </div>
+        <div className="text-xl font-semibold w-full ">{item.name}</div>
         <div>Description: {item.desc}</div>
 
         <div className="flex space-x-4 border-b-2 pb-2">
-          <div>Price: Rs. {item.price} </div>
+          <div>Price: {item.price} </div>
           <div>Quantity: {item.qty}</div>
         </div>
 
@@ -32,7 +38,7 @@ const Modal = ({ show, onClose, item }) => {
           </div>
           <button
             className="-ml-10 bg-blue-600 px-2 rounded-lg text-white font-semibold"
-            onClick={addToCart}
+            onClick={addToCart(item)}
           >
             Add to Cart
           </button>

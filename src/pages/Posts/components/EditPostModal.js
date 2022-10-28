@@ -21,8 +21,8 @@ function EditPostModal({ show, onClose, item }) {
             <label htmlFor="" className="w-2/12">
               Product Name
             </label>
-                    <input
-                        defaultValue={item.title}
+            <input
+              defaultValue={item.title}
               type="text"
               className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
             />
@@ -31,8 +31,8 @@ function EditPostModal({ show, onClose, item }) {
             <label htmlFor="" className="w-2/12">
               Quantity
             </label>
-                    <input
-                        defaultValue={item.qty}
+            <input
+              defaultValue={item.qty}
               type="text"
               className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
             />
@@ -41,8 +41,8 @@ function EditPostModal({ show, onClose, item }) {
             <label htmlFor="" className="w-2/12">
               Price
             </label>
-                    <input
-                        defaultValue={item.price}
+            <input
+              defaultValue={item.price}
               type="text"
               className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
             />
@@ -51,8 +51,8 @@ function EditPostModal({ show, onClose, item }) {
             <label htmlFor="" className="w-2/12">
               Description
             </label>
-                    <textarea
-                        defaultValue={item.desc}
+            <textarea
+              defaultValue={item.desc}
               type="text"
               className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
             />

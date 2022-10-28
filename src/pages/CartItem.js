@@ -10,11 +10,11 @@ const CartItem = ({item}) => {
         <div class="flex items-center hover:bg-gray-100 -mx-8 px-6 py-5">
             <div class="flex w-1/5"> 
               <div class="flex flex-col justify-between ml-2 flex-grow">
-                <p className="font-semibold">{item.title}</p>
+                <p className="font-semibold">{item.name}</p>
               </div>
             </div>
             <div class="flex justify-center w-1/5">
-              <div className="w-1/5">
+              <div className="w-2/5">
                 <input
                   type="number"
                   defaultValue={item.qty}
@@ -23,9 +23,9 @@ const CartItem = ({item}) => {
               </div>
             </div>
             <p className="text-center w-1/5 font-semibold text-sm">{item.price}</p>
-            <p className="text-center w-1/5 font-semibold text-sm">{item.price * item.qty}</p> 
+            <p className="text-center w-1/5 font-semibold text-sm">{parseInt(item.price.slice(0, -1)) * item.qty}$</p> 
             <div class="flex justify-center w-1/5">
-              <HiOutlineTrash size="20px" onClick={removeItem}/>
+              <HiOutlineTrash color="red" size="20px" onClick={removeItem}/>
             </div>
           </div>
     )
