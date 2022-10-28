@@ -1,7 +1,33 @@
-function EditPostModal({ show, onClose, item }) {
-  const addToCart = () => {
+import { useState } from "react";
+
+import axios from "axios"
+
+
+function EditPostModal({ show, onClose, item, }) {
+  const [name, setName] = useState(item?.name);
+  const [price, setPrice] = useState(item?.price);
+  const [qty, setQty] = useState(item?.qty);
+
+  const editPost = (item) => {
     //post request to create a new post
+    if ((name, price, qty)) {
+      axios
+        .post(`http://localhost:3333/api/seller/item/update`, {
+          _id: item._id, name:name, price:price, qty:qty, seller:"Ws"
+        })
+        .then((response) => console.log(response));
+    }
     onClose();
+  };
+
+  const handleNameChange = event => {
+    setName(event.target.value)
+  }
+  const handlePriceChange = event => {
+    setPrice(event.target.value)
+  }
+  const handleQtyChange = (event) => {
+    setQty(event.target.value);
   };
 
   if (show) {
@@ -16,15 +42,17 @@ function EditPostModal({ show, onClose, item }) {
         <p className="text-2xl font-semibole text-gray-700 mb-10 pb-5">
           Edit post
         </p>
-        <form action="" className="space-y-4">
+        <div className="space-y-4">
           <div className="w-full flex items-center ">
             <label htmlFor="" className="w-2/12">
               Product Name
             </label>
             <input
-              defaultValue={item.title}
+              defaultValue={item.name}
               type="text"
               className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              value={name}
+              onChange={handleNameChange}
             />
           </div>
           <div className="w-full flex items-center ">
@@ -35,6 +63,8 @@ function EditPostModal({ show, onClose, item }) {
               defaultValue={item.qty}
               type="text"
               className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              value={qty}
+              onChange={handleQtyChange}
             />
           </div>
           <div className="w-full flex items-center ">
@@ -45,6 +75,8 @@ function EditPostModal({ show, onClose, item }) {
               defaultValue={item.price}
               type="text"
               className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              value={price}
+              onChange={handlePriceChange}
             />
           </div>
           <div className="w-full flex items-center ">
@@ -60,18 +92,13 @@ function EditPostModal({ show, onClose, item }) {
           <div className="flex space-x-3">
             <button
               className="bg-blue-600 px-3 py-1 rounded-lg text-white"
-              onClick={addToCart}
+              onClick={()=>editPost(item._id,name,qty,price)}
             >
               Edit
             </button>
-            <button
-              className="bg-red-600 px-3 py-1 rounded-lg text-white"
-              onClick={addToCart}
-            >
-              Delete
-            </button>
+          
           </div>
-        </form>
+        </div>
       </div>
     );
   }
