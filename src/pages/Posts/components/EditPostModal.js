@@ -1,31 +1,61 @@
 import { useState } from "react";
 
-import axios from "axios"
+import axios from "axios";
 
-
-function EditPostModal({ show, onClose, item, }) {
+function EditPostModal({ show, onClose, item }) {
   const [name, setName] = useState(item?.name);
   const [price, setPrice] = useState(item?.price);
   const [qty, setQty] = useState(item?.qty);
 
-  const editPost = (item) => {
+  const editPost = (item, name, qty, price) => {
+    console.log(price);
     //post request to create a new post
     if ((name, price, qty)) {
       axios
-        .post(`http://localhost:3333/api/seller/item/update`, {
-          _id: item._id, name:name, price:price, qty:qty, seller:"Ws"
-        })
-        .then((response) => console.log(response));
+        .patch(
+          `http://localhost:3333/api/seller/item/update`,
+          {
+            _id: item._id,
+            name: name,
+            price: price,
+            qty: qty,
+            seller: item.seller,
+          },
+          {
+            headers: {
+              Authorization:
+                "Bearer " + JSON.parse(localStorage.getItem("token")),
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response)
+          window.location.href = "/posts";
+        });
     }
     onClose();
   };
+  const deletePost = (item) => {
+    axios
+      .delete(`http://localhost:3333/api/seller/item/delete/${item._id}`, {
+        headers: {
+          Authorization: "Bearer " + JSON.parse(localStorage.getItem("token")),
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        window.location.href = "/posts";
+      });
 
-  const handleNameChange = event => {
-    setName(event.target.value)
-  }
-  const handlePriceChange = event => {
-    setPrice(event.target.value)
-  }
+    onClose();
+  };
+
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
+  const handlePriceChange = (event) => {
+    setPrice(event.target.value);
+  };
   const handleQtyChange = (event) => {
     setQty(event.target.value);
   };
@@ -79,24 +109,20 @@ function EditPostModal({ show, onClose, item, }) {
               onChange={handlePriceChange}
             />
           </div>
-          <div className="w-full flex items-center ">
-            <label htmlFor="" className="w-2/12">
-              Description
-            </label>
-            <textarea
-              defaultValue={item.desc}
-              type="text"
-              className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-            />
-          </div>
+
           <div className="flex space-x-3">
             <button
               className="bg-blue-600 px-3 py-1 rounded-lg text-white"
-              onClick={()=>editPost(item._id,name,qty,price)}
+              onClick={() => editPost(item, name, qty, price)}
             >
               Edit
             </button>
-          
+            <button
+              className="bg-red-600 px-3 py-1 rounded-lg text-white"
+              onClick={() => deletePost(item)}
+            >
+              Delete
+            </button>
           </div>
         </div>
       </div>

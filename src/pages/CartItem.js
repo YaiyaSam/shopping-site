@@ -23,7 +23,7 @@ const CartItem = ({item}) => {
               </div>
             </div>
             <p className="text-center w-1/5 font-semibold text-sm">{item.price}</p>
-            <p className="text-center w-1/5 font-semibold text-sm">{parseInt(item.price.slice(0, -1)) * item.qty}$</p> 
+            <p className="text-center w-1/5 font-semibold text-sm">{parseInt(item.price?.slice(0, -1)) * item.qty}$</p> 
             <div class="flex justify-center w-1/5">
               <HiOutlineTrash color="red" size="20px" onClick={removeItem}/>
             </div>

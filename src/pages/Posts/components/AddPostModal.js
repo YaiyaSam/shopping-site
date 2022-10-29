@@ -1,33 +1,46 @@
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import axios from "axios";
 
-function AddPostModal({ show, onClose}) {
-  const [name, setName] = useState();
-  const [price, setPrice] = useState();
-  const [qty, setQty] = useState();
+function AddPostModal({ show, onClose, seller }) {
+  // const [name, setName] = useState("");
+  // const [price, setPrice] = useState("");
+  // const [qty, setQty] = useState("");
 
-  const handleNameChange = (event) => {
-    setName(event.target.value);
-  };
-  const handlePriceChange = (event) => {
-    setPrice(event.target.value);
-  };
-  const handleQtyChange = (event) => {
-    setQty(event.target.value);
-  };
+  const name = useRef();
+  const price = useRef();
+  const qty = useRef();
+  // const handleNameChange = (event) => {
+  //   setName(event.target.value);
+  // };
+  // const handlePriceChange = (event) => {
+  //   setPrice(event.target.value);
+  // };
+  // const handleQtyChange = (event) => {
+  //   setQty(event.target.value);
+  // };
 
   const add = () => {
     const item = {
-      name: name,
-      price: price,
-      qty: qty,
-      seller: "Kalsha",
+      name: name.current?.value,
+      price: price.current?.value,
+      qty: qty.current?.value,
+      seller: seller,
     };
     const response = axios.post(
       "http://localhost:3333/api/seller/item/create",
-      item
-    );
+      item,
+
+      {
+        headers: {
+          Authorization: "Bearer " + JSON.parse(localStorage.getItem("token")),
+        },
+      }
+    ).then((response => {
+      window.location.href = "/posts";
+    }));
     console.log(response);
+    alert("Post added!");
+    onClose();
   };
   if (show) {
     return (
@@ -41,7 +54,7 @@ function AddPostModal({ show, onClose}) {
         <p className="text-2xl font-semibole text-gray-700 mb-10 pb-5">
           Add new post
         </p>
-        <form className="space-y-4">
+        <div className="space-y-4">
           <div className="w-full flex items-center ">
             <label htmlFor="" className="w-2/12">
               Product Name
@@ -49,8 +62,8 @@ function AddPostModal({ show, onClose}) {
             <input
               type="text"
               className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-              onChange={() => handleNameChange}
-              value={name}
+              // onChange={() => handleNameChange}
+              ref={name}
             />
           </div>
           <div className="w-full flex items-center ">
@@ -60,8 +73,8 @@ function AddPostModal({ show, onClose}) {
             <input
               type="text"
               className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-              onChange={() => handleQtyChange}
-              value={qty}
+              // onChange={() => handleQtyChange}
+              ref={qty}
             />
           </div>
           <div className="w-full flex items-center ">
@@ -71,26 +84,18 @@ function AddPostModal({ show, onClose}) {
             <input
               type="text"
               className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-              onChange={() => handlePriceChange}
-              value={price}
+              // onChange={() => handlePriceChange}
+              ref={price}
             />
           </div>
-          <div className="w-full flex items-center ">
-            <label htmlFor="" className="w-2/12">
-              Description
-            </label>
-            <textarea
-              type="text"
-              className="w-10/12 ml-10 bg-gray-100 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-            />
-          </div>
+
           <button
             className="bg-blue-600 py-1 px-5 rounded-lg text-white"
             onClick={add}
           >
             Add
           </button>
-        </form>
+        </div>
       </div>
     );
   }

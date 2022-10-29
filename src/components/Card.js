@@ -3,7 +3,6 @@ const Card = ({ item, onClick }) => {
     <div className="w-full h-44 bg-white p-4 rounded-lg drop-shadow-md cursor-pointer" onClick={onClick}>
       <div className="h-4/5">
         <p className="font-semibold">{item.name}</p>
-        <p className="text-sm text-gray-600">{item.desc}</p>
       </div>
       <div className="flex justify-between h-1/5 text-sm">
         <p>{item.price}</p>

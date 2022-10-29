@@ -19,8 +19,10 @@ function Checkout() {
   const [cvc, setCvc] = useState("");
   const [cardName, setCardName] = useState("");
   const [mobile, setMobile] = useState("");
+  const [mobilePin, setMobilePin] = useState(false);
+  const [pin, setPin] = useState("")
 
-  let navigate = useNavigate()
+  let navigate = useNavigate();
   let products = [];
   const fetchItems = () => {
     if (localStorage.getItem("products")) {
@@ -63,46 +65,84 @@ function Checkout() {
   const handleCvcChange = (event) => {
     setCvc(event.target.value);
   };
+  const handleMobileChange = (event) => {
+    setMobile(event.target.value);
+  }
+  const handleSendPin = () => {
+setMobilePin(true)
+  }
+  const handlePinChange = (event) => {
+    setPin(event.target.value)
+  }
   const handlePayment = () => {
     let amount;
     if (items) {
       amount = items.reduce((total, item) => {
-        return total + parseInt(item.price.slice(0, -1)) * item.qty;
+        return total + parseInt(item.price?.slice(0, -1)) * item.qty;
       }, 0);
     }
     if (address) {
       axios
-        .post(`http://localhost:5555/api/delivery`, {
-          username: "Kalsha",
-          location: address,
-        })
+        .post(
+          `http://localhost:5555/api/delivery`,
+          {
+            username: JSON.parse(localStorage.getItem("user")).email,
+            location: address,
+          },
+          
+          {
+            headers: {
+              Authorization: "Bearer " + JSON.parse(localStorage.getItem("token")),
+            },
+          }
+        )
         .then((response) => console.log(response));
     }
 
     if (paymentMethod == 1) {
       axios
-        .post(`http://localhost:4444/api/payment/card`, {
-          cardHolderName: cardName,
-          ccNo: cardNo,
-          amount: amount,
-          cvc: cvc,
-        })
+        .post(
+          `http://localhost:4444/api/payment/card`,
+          {
+            cardHolderName: cardName,
+            ccNo: cardNo,
+            amount: amount,
+            cvc: cvc,
+            itemList: items,
+          },
+          
+          {
+            headers: {
+              Authorization: "Bearer " + JSON.parse(localStorage.getItem("token")),
+            },
+          }
+        )
         .then((response) => console.log(response));
     }
     if (paymentMethod == 2) {
       if ((mobile, amount)) {
         axios
-          .post(`http://localhost:4444/api/payment/mobile`, {
-            mobileNo: mobile,
-            pinNo: 0,
-            amount: amount,
-          })
+          .post(
+            `http://localhost:4444/api/payment/mobile`,
+            {
+              mobileNo: mobile,
+              pinNo: pin,
+              amount: amount,
+              itemList: items,
+            },
+            {
+              headers: {
+                Authorization:
+                  "Bearer " + JSON.parse(localStorage.getItem("token")),
+              },
+            }
+          )
           .then((response) => console.log(response));
       }
     }
     localStorage.removeItem("products");
     alert("Payment Succesful");
-    navigate("/home")
+    navigate("/");
   };
   return (
     <div class="container px-20 pt-10">
@@ -111,21 +151,25 @@ function Checkout() {
           <div class="flex justify-between border-b pb-8">
             <h1 class="font-semibold text-xl">Shopping Cart</h1>
           </div>
-          <div class="flex mt-10 mb-5">
-            <p className="text-gray-600 text-sm uppercase w-1/5">Product</p>
-            <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">
-              Quantity
-            </p>
-            <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">
-              Price
-            </p>
-            <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">
-              Total
-            </p>
-          </div>
+          {items && (
+            <div class="flex mt-10 mb-5">
+              <p className="text-gray-600 text-sm uppercase w-1/5">Product</p>
+              <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">
+                Quantity
+              </p>
+              <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">
+                Price
+              </p>
+              <p className="text-center text-gray-600 text-sm uppercase w-1/5 text-center">
+                Total
+              </p>
+            </div>
+          )}
+
           {items && items.map((item) => <CartItem item={item} />)}
+          {!items && <p>Currently your cart is empty!</p>}
         </div>
-        {!payment && (
+        {!payment && items && (
           <div class="w-2/5 px-8 py-10 bg-slate-50">
             <h1 class="font-semibold text-xl border-b pb-8">Order Summary</h1>
             <div class="flex justify-between mt-10 mb-5">
@@ -139,7 +183,9 @@ function Checkout() {
               <p className="font-semibold text-sm uppercase">
                 {items &&
                   items.reduce((total, item) => {
-                    return total + parseInt(item.price.slice(0, -1)) * item.qty;
+                    return (
+                      total + parseInt(item.price?.slice(0, -1)) * item.qty
+                    );
                   }, 0)}
                 $
               </p>
@@ -235,17 +281,40 @@ function Checkout() {
                 </div>
               </>
             ) : (
-              <div class="flex justify-between mb-5 w-full">
-                <label htmlFor="DeliveryAddress">
-                  Mobile No:
-                  <input
-                    type="text"
-                    placeholder="Enter mobile no"
-                    className="p-1 outline outline-1 ml-8"
-                    value={mobile}
-                  />
-                </label>
-              </div>
+              <>
+                <div class="flex justify-between mb-5 w-full">
+                  <label htmlFor="DeliveryAddress">
+                    Mobile No:
+                    <input
+                      type="text"
+                      placeholder="Enter mobile no"
+                      className="p-1 outline outline-1 ml-8"
+                      value={mobile}
+                      onChange={handleMobileChange}
+                    />
+                  </label>
+                  <button
+                    className="outline outline-1 rounded bg-gray-400 px-2"
+                    onClick={handleSendPin}
+                  >
+                    Send pin
+                  </button>
+                </div>
+                {mobilePin && (
+                  <div class="flex justify-between mb-5 w-full">
+                    <label htmlFor="DeliveryAddress">
+                      Pin No
+                      <input
+                        type="text"
+                        placeholder="Enter mobile no"
+                        className="p-1 outline outline-1 ml-8"
+                        value={pin}
+                        onChange={handlePinChange}
+                      />
+                    </label>
+                  </div>
+                )}
+              </>
             )}
 
             <button
