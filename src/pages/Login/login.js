@@ -21,23 +21,13 @@ export default function Login() {
         .post("http://localhost:8888/api/auth/login", data)
         .then((response) => {
           localStorage.setItem("token", JSON.stringify(response.data.token));
-          if (data.email == "kalsha.sam26@gmail.com") {
-            localStorage.setItem(
-              "user",
-              JSON.stringify({
-                email: emailInputElement.current?.value,
-                role: "seller",
-              })
-            );
-          } else {
-            localStorage.setItem(
-              "user",
-              JSON.stringify({
-                email: emailInputElement.current?.value,
-                role: "buyer",
-              })
-            );
-          }
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              email: response.data.username,
+              role: response.data.role,
+            })
+          );
           window.location.href = "/";
         })
         .catch((error) => {
