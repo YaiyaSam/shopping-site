@@ -23,6 +23,20 @@ function Shop() {
     );
     setItems(response.data);
   };
+    function handleSearch(keyword) {
+      const searchText = keyword.trim().toLowerCase();
+      if (searchText === "") {
+        fetchItems();
+      } else {
+        console.log("heell");
+        const filteredItems= items.filter((p) => {
+          return (
+            p.name.toLowerCase().includes(searchText)
+          );
+        });
+        setItems(filteredItems);
+      }
+    }
 
   const onViewItem = (item) => {
     console.log(item);
@@ -55,20 +69,22 @@ function Shop() {
 
   return (
     <div className="px-20 pt-10 relative">
+      <input
+        type="search"
+        id="default-search"
+        className="block p-2 pl-10 w-full text-lg rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 bg-gray-200 mb-10 outline-0"
+        placeholder="Search users..."
+        onChange={(event) => handleSearch(event.target.value)}
+      />
       <div className="grid grid-cols-4 gap-6">
         {items &&
           items.map((item) => {
             return <Card item={item} onClick={() => onViewItem(item)} />;
           })}
-        
-        {!items && (<p>Currently you have no active posts</p>)}
 
-        <Modal
-          show={isModalVisible}
-          onClose={onClose}
-          item={item}
-        
-        />
+        {!items && <p>Currently you have no active posts</p>}
+
+        <Modal show={isModalVisible} onClose={onClose} item={item} />
       </div>
     </div>
   );
